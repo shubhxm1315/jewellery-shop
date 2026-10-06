@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin - Add Product</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body style="background-color: #FAFAFA; font-family: 'Montserrat', sans-serif;">
+
+<nav style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 5rem; background-color: #FFFFFF; border-bottom: 1px solid #EEEEEE;">
+    <b style="font-family: 'Playfair Display', serif; font-size: 1.8rem; letter-spacing: 2px;">DURGA JEWELLERS (Admin)</b>
+    <div>
+        <a href="/products" style="text-decoration: none; color: #111; font-size: 0.85rem; text-transform: uppercase;">View Collection</a>
+    </div>
+</nav>
+
+<main class="form" style="max-width: 500px; margin: 4rem auto; background: #fff; padding: 3rem; box-shadow: 0 10px 25px rgba(0,0,0,0.03);">
+    <h1 style="font-family: 'Playfair Display', serif; text-align: center; margin-bottom: 2rem;">Add New Product</h1>
+
+    <!-- enctype="multipart/form-data" is required for image uploading -->
+    <form th:action="@{/products/admin/add}" th:object="${product}" method="post" enctype="multipart/form-data">
+
+        <input type="text" th:field="*{name}" placeholder="Product Name (e.g. Diamond Necklace)" required
+               style="width:100%; padding: 10px; margin-bottom: 20px; border:none; border-bottom:1px solid #ddd; outline:none;">
+
+        <input type="text" th:field="*{description}" placeholder="Description" required
+               style="width:100%; padding: 10px; margin-bottom: 20px; border:none; border-bottom:1px solid #ddd; outline:none;">
+
+        <input type="number" step="0.01" th:field="*{price}" placeholder="Price in ₹" required
+               style="width:100%; padding: 10px; margin-bottom: 20px; border:none; border-bottom:1px solid #ddd; outline:none;">
+
+        <label style="display:block; text-align:left; font-size: 0.85rem; color:#666; margin-bottom: 5px;">Upload Product Photo:</label>
+        <input type="file" name="file" accept="image/*" required
+               style="width:100%; margin-bottom: 25px; padding: 5px 0;">
+
+        <button type="submit" style="width:100%; padding: 14px; background:#111; color:#fff; border:none; letter-spacing:2px; text-transform:uppercase; cursor:pointer;">
+            Upload Product
+        </button>
+    </form>
+</main>
+
+</body>
+</html>

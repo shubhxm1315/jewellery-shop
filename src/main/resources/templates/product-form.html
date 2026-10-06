@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${product.id == null ? 'Add Product - SHUB ADMIN' : 'Edit Product - SHUB ADMIN'}">Product - SHUB ADMIN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --paper: #faf8f3;
+            --surface: #ffffff;
+            --ink: #241b19;
+            --muted: #776b66;
+            --line: #e1d9cd;
+            --wine: #641e2b;
+            --wine-dark: #42131d;
+            --gold: #b08a48;
+            --gold-soft: #eadfc9;
+            --success: #355c48;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            background:
+                    radial-gradient(circle at 0 0, rgba(176, 138, 72, .08), transparent 25%),
+                    var(--paper);
+            color: var(--ink);
+            font-family: "Manrope", sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 82px;
+            padding: 16px clamp(22px, 5vw, 72px);
+            border-bottom: 1px solid var(--line);
+            background: rgba(255, 255, 255, .94);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-mark {
+            display: grid;
+            place-items: center;
+            width: 34px;
+            height: 34px;
+            border: 1px solid var(--gold);
+            border-radius: 50%;
+            color: var(--wine);
+            font-family: "Cormorant Garamond", serif;
+            font-size: 19px;
+            font-weight: 600;
+        }
+
+        .brand b {
+            font-family: "Cormorant Garamond", serif;
+            font-size: 20px;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+        }
+
+        .brand small {
+            display: block;
+            margin-top: 2px;
+            color: var(--gold);
+            font-size: 7px;
+            font-weight: 600;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--muted);
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: .13em;
+            text-transform: uppercase;
+            transition: color .2s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--wine);
+        }
+
+        main {
+            width: min(1180px, calc(100% - 44px));
+            margin: 0 auto;
+            padding: clamp(48px, 7vw, 90px) 0 100px;
+        }
+
+        .page-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 30px;
+            margin-bottom: 38px;
+        }
+
+        .eyebrow {
+            margin: 0 0 10px;
+            color: var(--gold);
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: .22em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            margin: 0;
+            font-family: "Cormorant Garamond", serif;
+            font-size: clamp(42px, 5vw, 62px);
+            font-weight: 500;
+            letter-spacing: -.02em;
+            line-height: .95;
+        }
+
+        .heading-note {
+            max-width: 350px;
+            margin: 0;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.7;
+            text-align: right;
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: minmax(280px, .8fr) minmax(0, 1.45fr);
+            align-items: start;
+            overflow: hidden;
+            border: 1px solid var(--line);
+            background: var(--surface);
+            box-shadow: 0 28px 70px rgba(49, 32, 26, .07);
+        }
+
+        .media-column {
+            position: sticky;
+            top: 20px;
+            padding: 34px;
+            border-right: 1px solid var(--line);
+            background: #f4efe6;
+        }
+
+        .section-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 16px;
+        }
+
+        .section-label h2 {
+            margin: 0;
+            font-family: "Cormorant Garamond", serif;
+            font-size: 23px;
+            font-weight: 600;
+        }
+
+        .optional {
+            color: var(--muted);
+            font-size: 8px;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+        }
+
+        .current-image {
+            position: relative;
+            width: 100%;
+            aspect-ratio: .95;
+            margin-bottom: 18px;
+            overflow: hidden;
+            border: 1px solid #d8cdbd;
+            background: #eae2d5;
+        }
+
+        .current-image img,
+        #imagePreview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .current-image span {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            padding: 7px 9px;
+            background: rgba(255, 255, 255, .9);
+            color: var(--wine);
+            font-size: 7px;
+            font-weight: 600;
+            letter-spacing: .13em;
+            text-transform: uppercase;
+        }
+
+        .empty-image {
+            display: grid;
+            place-items: center;
+            width: 100%;
+            aspect-ratio: .95;
+            margin-bottom: 18px;
+            border: 1px dashed #cabeaa;
+            background: rgba(255, 255, 255, .45);
+            color: var(--muted);
+            text-align: center;
+        }
+
+        .empty-image strong {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--wine);
+            font-family: "Cormorant Garamond", serif;
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .empty-image p {
+            margin: 0;
+            font-size: 10px;
+        }
+
+        #imagePreview {
+            display: none;
+            aspect-ratio: .95;
+            margin-bottom: 18px;
+            border: 1px solid var(--gold);
+        }
+
+        .file-label {
+            display: block;
+            margin: 0 0 9px;
+            color: var(--ink);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            color: var(--muted);
+            font-family: "Manrope", sans-serif;
+            font-size: 10px;
+        }
+
+        input[type="file"]::file-selector-button {
+            margin-right: 10px;
+            padding: 10px 13px;
+            border: 1px solid var(--wine);
+            background: transparent;
+            color: var(--wine);
+            font-family: "Manrope", sans-serif;
+            font-size: 8px;
+            font-weight: 600;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        .image-help {
+            margin: 12px 0 0;
+            color: var(--muted);
+            font-size: 9px;
+            line-height: 1.6;
+        }
+
+        .fields-column {
+            padding: clamp(30px, 5vw, 58px);
+        }
+
+        .form-section + .form-section {
+            margin-top: 42px;
+            padding-top: 36px;
+            border-top: 1px solid var(--line);
+        }
+
+        .field-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 24px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+        }
+
+        .field.full {
+            grid-column: 1 / -1;
+        }
+
+        .field label {
+            color: #4e423e;
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+        }
+
+        .required {
+            color: var(--wine);
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+            border: 0;
+            border-bottom: 1px solid #cfc5b8;
+            border-radius: 0;
+            outline: 0;
+            background: transparent;
+            color: var(--ink);
+            font-family: "Manrope", sans-serif;
+            font-size: 13px;
+            transition: border-color .2s ease, box-shadow .2s ease;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            height: 45px;
+        }
+
+        textarea {
+            min-height: 115px;
+            padding: 13px 0;
+            line-height: 1.6;
+            resize: vertical;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        textarea:focus {
+            border-color: var(--wine);
+            box-shadow: 0 1px 0 var(--wine);
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #aaa09b;
+        }
+
+        .switches {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .check-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-height: 65px;
+            padding: 14px 16px;
+            border: 1px solid var(--line);
+            cursor: pointer;
+        }
+
+        .check-card input {
+            width: 17px;
+            height: 17px;
+            margin: 0;
+            accent-color: var(--wine);
+        }
+
+        .check-card strong {
+            display: block;
+            margin-bottom: 3px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .check-card span {
+            display: block;
+            color: var(--muted);
+            font-size: 8px;
+            line-height: 1.4;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 24px;
+            margin-top: 42px;
+            padding-top: 30px;
+            border-top: 1px solid var(--line);
+        }
+
+        .cancel {
+            padding: 12px 2px;
+            border-bottom: 1px solid var(--ink);
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+        }
+
+        button {
+            min-width: 175px;
+            min-height: 50px;
+            border: 1px solid var(--wine);
+            background: var(--wine);
+            color: white;
+            font-family: "Manrope", sans-serif;
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background .2s ease, transform .2s ease;
+        }
+
+        button:hover {
+            background: var(--wine-dark);
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 820px) {
+            .page-heading {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .heading-note {
+                text-align: left;
+            }
+
+            form {
+                grid-template-columns: 1fr;
+            }
+
+            .media-column {
+                position: static;
+                border-right: 0;
+                border-bottom: 1px solid var(--line);
+            }
+
+            .current-image,
+            .empty-image,
+            #imagePreview {
+                max-width: 420px;
+                aspect-ratio: 1.25;
+            }
+        }
+
+        @media (max-width: 570px) {
+            nav {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 18px;
+            }
+
+            .nav-links {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            main {
+                width: min(100% - 28px, 1180px);
+                padding-top: 42px;
+            }
+
+            .media-column,
+            .fields-column {
+                padding: 24px 20px;
+            }
+
+            .field-grid,
+            .switches {
+                grid-template-columns: 1fr;
+            }
+
+            .field.full {
+                grid-column: auto;
+            }
+
+            .form-actions {
+                align-items: stretch;
+                flex-direction: column-reverse;
+            }
+
+            .cancel {
+                align-self: center;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition-duration: .01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<nav>
+    <a class="brand" href="/admin/dashboard" aria-label="SHUB Admin dashboard">
+        <span class="brand-mark">S</span>
+        <span>
+                <b>SHUB ADMIN</b>
+                <small>Jewellery management</small>
+            </span>
+    </a>
+
+    <div class="nav-links">
+        <a href="/admin/dashboard">Dashboard</a>
+        <a href="/">View Website</a>
+    </div>
+</nav>
+
+<main>
+    <header class="page-heading">
+        <div>
+            <p class="eyebrow">Product catalogue</p>
+            <h1 th:if="${product.id == null}">Add Product</h1>
+            <h1 th:if="${product.id != null}">Edit Product</h1>
+        </div>
+        <p class="heading-note">
+            Add product details, inventory information and imagery.
+            Required fields are marked with an asterisk.
+        </p>
+    </header>
+
+    <form action="/admin/product/save"
+          method="post"
+          enctype="multipart/form-data"
+          th:object="${product}">
+
+        <!-- Original Spring Security CSRF field is preserved. -->
+        <input type="hidden"
+               th:name="${_csrf.parameterName}"
+               th:value="${_csrf.token}">
+
+        <!-- Original product identity and image URL fields are preserved. -->
+        <input type="hidden" th:field="*{id}">
+        <input type="hidden" th:field="*{imageUrl}">
+
+        <aside class="media-column">
+            <div class="section-label">
+                <h2>Product Image</h2>
+                <span class="optional">JPG or PNG</span>
+            </div>
+
+            <div class="current-image"
+                 th:if="${product.imageUrl != null and product.imageUrl != ''}">
+                <img th:src="${product.imageUrl}" alt="Current Product Image">
+                <span>Current image</span>
+            </div>
+
+            <div class="empty-image"
+                 th:if="${product.imageUrl == null or product.imageUrl == ''}">
+                <div>
+                    <strong>No image yet</strong>
+                    <p>Choose an image below to preview it.</p>
+                </div>
+            </div>
+
+            <img id="imagePreview" src="" alt="New Image Preview">
+
+            <label class="file-label" for="image">Choose New Image</label>
+            <input id="image"
+                   type="file"
+                   name="image"
+                   accept="image/*"
+                   onchange="previewImage(event)">
+            <p class="image-help">
+                Use a clear, high-resolution product image with a simple
+                background for the best storefront presentation.
+            </p>
+        </aside>
+
+        <div class="fields-column">
+            <section class="form-section">
+                <div class="section-label">
+                    <h2>Product Details</h2>
+                    <span class="optional">Required information</span>
+                </div>
+
+                <div class="field-grid">
+                    <div class="field full">
+                        <label for="name">Product Name <span class="required">*</span></label>
+                        <input id="name"
+                               type="text"
+                               th:field="*{name}"
+                               placeholder="Enter product name"
+                               required>
+                    </div>
+
+                    <div class="field full">
+                        <label for="description">Description <span class="required">*</span></label>
+                        <textarea id="description"
+                                  th:field="*{description}"
+                                  placeholder="Describe the materials, design and craftsmanship"
+                                  required></textarea>
+                    </div>
+
+                    <div class="field full">
+                        <label for="category">Category <span class="required">*</span></label>
+                        <input id="category"
+                               type="text"
+                               th:field="*{category}"
+                               placeholder="Ring / Necklace / Earrings"
+                               required>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <div class="section-label">
+                    <h2>Pricing &amp; Inventory</h2>
+                    <span class="optional">Store information</span>
+                </div>
+
+                <div class="field-grid">
+                    <div class="field">
+                        <label for="price">Price <span class="required">*</span></label>
+                        <input id="price"
+                               type="number"
+                               step="0.01"
+                               th:field="*{price}"
+                               placeholder="0.00"
+                               required>
+                    </div>
+
+                    <div class="field">
+                        <label for="stock">Stock <span class="required">*</span></label>
+                        <input id="stock"
+                               type="number"
+                               th:field="*{stock}"
+                               placeholder="0"
+                               required>
+                    </div>
+
+                </div>
+            </section>
+
+            <section class="form-section">
+                <div class="section-label">
+                    <h2>Storefront Visibility</h2>
+                    <span class="optional">Optional labels</span>
+                </div>
+
+                <div class="switches">
+                    <label class="check-card">
+                        <input type="checkbox" th:field="*{newCollection}">
+                        <span>
+                                <strong>New Collection</strong>
+                                <span>Highlight as a newly added product.</span>
+                            </span>
+                    </label>
+
+                    <label class="check-card">
+                        <input type="checkbox" th:field="*{trending}">
+                        <span>
+                                <strong>Trending</strong>
+                                <span>Feature among popular products.</span>
+                            </span>
+                    </label>
+                </div>
+            </section>
+
+            <div class="form-actions">
+                <a class="cancel" href="/admin/dashboard">Cancel</a>
+                <button type="submit">Save Product</button>
+            </div>
+        </div>
+    </form>
+</main>
+
+<script>
+    function previewImage(event) {
+        const file = event.target.files[0];
+        const preview = document.getElementById("imagePreview");
+
+        if (file) {
+            preview.src = URL.createObjectURL(file);
+            preview.style.display = "block";
+        } else {
+            preview.src = "";
+            preview.style.display = "none";
+        }
+    }
+</script>
+</body>
+</html>

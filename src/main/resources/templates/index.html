@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DURGA JEWELLERS - Fine Jewellery</title>
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Manrope:wght@400;500;600&display=swap");
+
+        :root {
+            --ivory: #faf6ee;
+            --paper: #fffdf9;
+            --ink: #281c19;
+            --muted: #756660;
+            --wine: #691f2e;
+            --wine-dark: #42131d;
+            --gold: #b18a47;
+            --gold-light: #dbc28f;
+            --line: #dfd4c2;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            overflow-x: hidden;
+            background: var(--paper);
+            color: var(--ink);
+            font-family: "Manrope", sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        img {
+            display: block;
+            max-width: 100%;
+        }
+
+        .announcement {
+            padding: 9px 20px;
+            background: var(--wine-dark);
+            color: #f7eadf;
+            font-size: 9px;
+            letter-spacing: 0.18em;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        nav {
+            position: relative;
+            z-index: 10;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            min-height: 104px;
+            padding: 16px clamp(24px, 5vw, 78px);
+            border-bottom: 1px solid rgba(223, 212, 194, 0.75);
+            background: rgba(255, 253, 249, 0.96);
+        }
+
+        .nav-left,
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: clamp(20px, 2.7vw, 44px);
+        }
+
+        .nav-right {
+            justify-content: flex-end;
+        }
+
+        nav a {
+            position: relative;
+            padding: 9px 0;
+            color: #51433f;
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+
+        nav a::after {
+            position: absolute;
+            right: 0;
+            bottom: 3px;
+            left: 0;
+            height: 1px;
+            background: var(--wine);
+            content: "";
+            transform: scaleX(0);
+            transition: transform 0.2s ease;
+        }
+
+        nav a:hover::after,
+        nav a.active::after {
+            transform: scaleX(1);
+        }
+
+        .brand {
+            grid-column: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1;
+        }
+
+        .brand b {
+            font-family: "Cormorant Garamond", serif;
+            font-size: 25px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            white-space: nowrap;
+        }
+
+        .brand span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            color: var(--gold);
+            font-size: 7px;
+            letter-spacing: 0.28em;
+        }
+
+        .brand span::before,
+        .brand span::after {
+            width: 22px;
+            height: 1px;
+            background: var(--gold-light);
+            content: "";
+        }
+
+        .hero {
+            position: relative;
+            display: flex;
+            align-items: center;
+            min-height: calc(100vh - 134px);
+            padding: 90px clamp(24px, 8vw, 128px);
+            overflow: hidden;
+            background-image:
+                    linear-gradient(
+                            90deg,
+                            rgba(30, 13, 16, 0.82) 0%,
+                            rgba(30, 13, 16, 0.53) 42%,
+                            rgba(30, 13, 16, 0.08) 75%
+                    ),
+                    url("https://images.unsplash.com/photo-1721807551235-4072be6913c0?auto=format&fit=crop&w=2000&q=90");
+            background-position: center;
+            background-size: cover;
+            color: #fffaf3;
+        }
+
+        .hero::before {
+            position: absolute;
+            inset: 28px;
+            border: 1px solid rgba(219, 194, 143, 0.4);
+            content: "";
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 720px;
+        }
+
+        .eyebrow {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 0 0 23px;
+            color: var(--gold-light);
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+        }
+
+        .eyebrow::before {
+            width: 38px;
+            height: 1px;
+            flex: 0 0 auto;
+            background: var(--gold-light);
+            content: "";
+        }
+
+        .hero h1 {
+            max-width: 700px;
+            margin: 0;
+            font-family: "Cormorant Garamond", serif;
+            font-size: clamp(58px, 7.5vw, 108px);
+            font-weight: 400;
+            letter-spacing: -0.04em;
+            line-height: 0.86;
+        }
+
+        .hero h1 em {
+            display: block;
+            color: var(--gold-light);
+            font-weight: 400;
+        }
+
+        .hero-copy {
+            max-width: 510px;
+            margin: 30px 0 36px;
+            color: #e3d7cc;
+            font-family: "Cormorant Garamond", serif;
+            font-size: 20px;
+            line-height: 1.55;
+        }
+
+        .hero-actions {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .btn-gold {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            min-width: 190px;
+            min-height: 52px;
+            padding: 14px 24px;
+            background: var(--gold-light);
+            color: var(--wine-dark);
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 0.17em;
+            text-transform: uppercase;
+            transition:
+                    background 0.2s ease,
+                    transform 0.2s ease;
+        }
+
+        .btn-gold:hover {
+            background: #ead6ac;
+            transform: translateY(-2px);
+        }
+
+        .text-link {
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(255, 250, 243, 0.7);
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+        }
+
+        .scroll-note {
+            position: absolute;
+            right: clamp(32px, 4vw, 70px);
+            bottom: 65px;
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            color: #eaded3;
+            font-size: 8px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            transform: rotate(90deg);
+            transform-origin: right bottom;
+        }
+
+        .scroll-note span {
+            width: 45px;
+            height: 1px;
+            background: var(--gold-light);
+        }
+
+        .promise-strip {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            border-bottom: 1px solid var(--line);
+            background: var(--ivory);
+        }
+
+        .promise {
+            padding: 33px 24px;
+            text-align: center;
+        }
+
+        .promise + .promise {
+            border-left: 1px solid var(--line);
+        }
+
+        .promise strong {
+            display: block;
+            margin-bottom: 7px;
+            color: var(--wine);
+            font-family: "Cormorant Garamond", serif;
+            font-size: 21px;
+            font-weight: 600;
+        }
+
+        .promise span {
+            color: var(--muted);
+            font-size: 8px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+
+        .collections {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: clamp(80px, 10vw, 145px) clamp(22px, 5vw, 74px);
+        }
+
+        .section-heading {
+            max-width: 680px;
+            margin: 0 auto 58px;
+            text-align: center;
+        }
+
+        .section-heading p {
+            margin: 0 0 14px;
+            color: var(--wine);
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 0.26em;
+            text-transform: uppercase;
+        }
+
+        .section-heading h2 {
+            margin: 0;
+            font-family: "Cormorant Garamond", serif;
+            font-size: clamp(44px, 5vw, 67px);
+            font-weight: 400;
+            line-height: 1;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .category-card {
+            position: relative;
+            aspect-ratio: 0.79;
+            overflow: hidden;
+            background: #e9dfd1;
+        }
+
+        .category-card::after {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(0deg, rgba(35, 16, 19, 0.72), transparent 57%);
+            content: "";
+        }
+
+        .category-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+        }
+
+        .category-card:hover img {
+            transform: scale(1.04);
+        }
+
+        .category-copy {
+            position: absolute;
+            z-index: 1;
+            right: 28px;
+            bottom: 28px;
+            left: 28px;
+            color: white;
+        }
+
+        .category-copy span {
+            color: var(--gold-light);
+            font-size: 8px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+
+        .category-copy h3 {
+            margin: 7px 0 0;
+            font-family: "Cormorant Garamond", serif;
+            font-size: 36px;
+            font-weight: 500;
+        }
+
+        .story {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 580px;
+            background: var(--wine-dark);
+            color: #fff8f0;
+        }
+
+        .story-image {
+            min-height: 500px;
+        }
+
+        .story-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .story-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding: clamp(55px, 8vw, 120px);
+        }
+
+        .story-content h2 {
+            max-width: 520px;
+            margin: 0 0 24px;
+            font-family: "Cormorant Garamond", serif;
+            font-size: clamp(45px, 5vw, 70px);
+            font-weight: 400;
+            line-height: 0.98;
+        }
+
+        .story-content p {
+            max-width: 450px;
+            margin: 0 0 34px;
+            color: #cfbfb5;
+            font-family: "Cormorant Garamond", serif;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        .story-content .eyebrow {
+            color: var(--gold-light);
+            font-family: "Manrope", sans-serif;
+            font-size: 9px;
+            line-height: normal;
+        }
+
+        .story-content .text-link {
+            color: var(--gold-light);
+            border-color: var(--gold-light);
+        }
+
+        footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 30px;
+            padding: 48px clamp(24px, 5vw, 78px);
+            background: #211715;
+            color: #b9a9a1;
+        }
+
+        footer b {
+            color: #f7eee5;
+            font-family: "Cormorant Garamond", serif;
+            font-size: 21px;
+            letter-spacing: 0.12em;
+        }
+
+        footer span {
+            font-size: 8px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 620px) {
+            .site-page {
+                width: 1200px;
+                zoom: calc(100vw / 1200px);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            * {
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+    </style>
+</head>
+<body>
+<div class="site-page">
+    <div class="announcement">Complimentary insured shipping across India</div>
+
+    <nav>
+        <div class="nav-left">
+            <a class="active" href="/">Home</a>
+            <a href="/products">Collection</a>
+        </div>
+        <a class="brand" href="/" aria-label="Durga Jewellers home">
+            <b>Durga Jewellers</b>
+            <span>Fine Jewellery</span>
+        </a>
+        <div class="nav-right">
+            <a href="/products">Explore</a>
+            <a href="/login">Sign In</a>
+            <a href="/register">Register</a>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <p class="eyebrow">Jewels of enduring beauty</p>
+                <h1>Timeless elegance <em>&amp; tradition</em></h1>
+                <p class="hero-copy">Discover handcrafted fine jewellery where generations of artistry meet the beauty of your most cherished moments.</p>
+                <div class="hero-actions">
+                    <a href="/products" class="btn-gold">Explore Collection</a>
+                    <a href="#story" class="text-link">Our craftsmanship</a>
+                </div>
+            </div>
+            <div class="scroll-note" aria-hidden="true"><span></span>Discover</div>
+        </section>
+
+        <section class="promise-strip" aria-label="Our promises">
+            <div class="promise"><strong>Authentic Craft</strong><span>Made by master artisans</span></div>
+            <div class="promise"><strong>Certified Purity</strong><span>Trust in every detail</span></div>
+            <div class="promise"><strong>Made to Endure</strong><span>Heirlooms for generations</span></div>
+        </section>
+
+        <section class="collections">
+            <div class="section-heading">
+                <p>Curated for you</p>
+                <h2>Discover our signature collections</h2>
+            </div>
+            <div class="category-grid">
+                <a class="category-card" href="/products">
+                    <img src="https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&amp;fit=crop&amp;w=900&amp;q=85" alt="Traditional gold necklace">
+                    <div class="category-copy"><span>Explore</span><h3>Necklaces</h3></div>
+                </a>
+                <a class="category-card" href="/products">
+                    <img src="https://images.unsplash.com/photo-1601121141418-c1caa10a2a0b?auto=format&amp;fit=crop&amp;w=900&amp;q=85" alt="Traditional beaded jewellery">
+                    <div class="category-copy"><span>Explore</span><h3>Bridal Heirlooms</h3></div>
+                </a>
+                <a class="category-card" href="/products">
+                    <img src="https://images.unsplash.com/flagged/photo-1570055349452-29232699cc63?auto=format&amp;fit=crop&amp;w=900&amp;q=85" alt="Ornate gold jewellery">
+                    <div class="category-copy"><span>Explore</span><h3>Festive Jewels</h3></div>
+                </a>
+            </div>
+        </section>
+
+        <section class="story" id="story">
+            <div class="story-image">
+                <img src="https://images.unsplash.com/photo-1654781456542-fdd1683c79c3?auto=format&amp;fit=crop&amp;w=1400&amp;q=85" alt="Display of traditional gold jewellery">
+            </div>
+            <div class="story-content">
+                <p class="eyebrow">Our legacy</p>
+                <h2>Crafted with devotion, worn with pride</h2>
+                <p>Every Durga Jewellers creation celebrates India’s rich jewellery heritage through meticulous detail, precious materials and the hands of skilled artisans.</p>
+                <a class="text-link" href="/products">View the collection</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <b>DURGA JEWELLERS</b>
+        <a href="https://maps.app.goo.gl/g4CXtWfMKtdCbt9ZA"
+           target="_blank"
+           style="color: inherit; text-decoration: none;">
+            📍 View our shop
+        </a>
+    </footer>
+</div>
+</body>
+</html>

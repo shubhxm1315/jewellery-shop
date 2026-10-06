@@ -1,0 +1,213 @@
+/* --- LUXURY TYPOGRAPHY --- */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap');
+
+:root {
+    --gold: #D4AF37;
+    --dark: #111111;
+    --light: #FAFAFA;
+    --text-muted: #666666;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif;
+    background-color: var(--light);
+    color: var(--dark);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* --- THE NAVIGATION BAR --- */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 5rem;
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #EEEEEE;
+}
+
+nav b {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    letter-spacing: 4px;
+    color: var(--dark);
+    text-transform: uppercase;
+}
+
+nav div a {
+    margin-left: 40px;
+    text-decoration: none;
+    color: var(--dark);
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: color 0.3s ease;
+}
+
+nav div a:hover {
+    color: var(--gold);
+}
+
+/* --- THE HOMEPAGE HERO SECTION --- */
+.hero {
+    text-align: center;
+    padding: 8rem 2rem;
+    background-color: #FFFFFF;
+    margin: 2rem 5rem;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.02);
+}
+
+.hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    font-weight: 400;
+    margin-bottom: 1rem;
+    color: var(--dark);
+}
+
+.hero p {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    font-weight: 300;
+    letter-spacing: 1px;
+    margin-bottom: 3rem;
+}
+
+/* --- LUXURY BUTTONS --- */
+.btn-gold {
+    display: inline-block;
+    padding: 15px 40px;
+    background-color: var(--gold);
+    color: #FFFFFF;
+    text-decoration: none;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-gold:hover {
+    background-color: var(--dark);
+}
+
+/* --- THE LOGIN & REGISTER FORMS --- */
+main.form {
+    background-color: #FFFFFF;
+    max-width: 450px;
+    margin: 5rem auto;
+    padding: 3rem 4rem;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.04);
+    text-align: center;
+}
+
+main.form h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 400;
+    margin-bottom: 2.5rem;
+    letter-spacing: 1px;
+}
+
+main.form input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 0;
+    margin-bottom: 25px;
+    border: none;
+    border-bottom: 1px solid #DDDDDD;
+    background-color: transparent;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+    color: var(--dark);
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+main.form input:focus {
+    border-bottom: 1px solid var(--gold);
+}
+
+main.form button {
+    width: 100%;
+    padding: 16px;
+    margin-top: 10px;
+    background-color: var(--dark);
+    color: #FFFFFF;
+    border: none;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+main.form button:hover {
+    background-color: var(--gold);
+}
+
+/* --- PRODUCT COLLECTION GRID --- */
+.product-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2.5rem;
+    padding: 3rem 5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.product-card {
+    background-color: #FFFFFF;
+    padding: 2rem;
+    border: 1px solid #EEEEEE;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+.product-card h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    color: var(--dark);
+}
+
+.product-card p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}
+
+.product-card .price {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.product-card a {
+    color: var(--dark);
+    text-decoration: none;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--dark);
+    padding-bottom: 2px;
+    transition: color 0.3s, border-color 0.3s;
+}
+
+.product-card a:hover {
+    color: var(--gold);
+    border-color: var(--gold);
+}

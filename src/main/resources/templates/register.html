@@ -1,0 +1,736 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Royal Registration</title>
+
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap");
+
+        :root {
+            --emerald-950: #041c16;
+            --emerald-900: #082a22;
+            --emerald-800: #104438;
+            --maroon-900: #4d1021;
+            --maroon-700: #79243a;
+            --gold-light: #f7e7ae;
+            --gold: #d2aa55;
+            --gold-dark: #906725;
+            --ivory: #fffaf0;
+            --muted: #d2c7b2;
+            --error: #ffc0c8;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            min-height: 100%;
+            margin: 0;
+        }
+
+        body {
+            color: var(--ivory);
+            font-family: "Inter", sans-serif;
+            background: var(--emerald-950);
+        }
+
+        .royal-page {
+            --x: 50%;
+            --y: 50%;
+            --reveal-opacity: 0;
+
+            position: relative;
+            min-height: 100vh;
+            padding: 44px 22px;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+            isolation: isolate;
+        }
+
+        /* Background portrait layers */
+
+        .portrait-layer {
+            position: fixed;
+            inset: 0;
+            z-index: -5;
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+            object-position: center 25%;
+            user-select: none;
+            pointer-events: none;
+        }
+
+        .portrait-layer.base {
+            filter:
+                    brightness(0.48)
+                    saturate(0.7)
+                    contrast(1.08)
+                    sepia(0.14);
+            transform: scale(1.02);
+        }
+
+        .portrait-layer.adorned {
+            z-index: -4;
+            opacity: var(--reveal-opacity);
+            filter:
+                    brightness(0.84)
+                    saturate(1.18)
+                    contrast(1.05);
+
+            -webkit-mask-image: radial-gradient(
+                    circle 190px at var(--x) var(--y),
+                    #000 0,
+                    #000 54%,
+                    rgba(0, 0, 0, 0.95) 64%,
+                    rgba(0, 0, 0, 0.55) 80%,
+                    transparent 100%
+            );
+
+            mask-image: radial-gradient(
+                    circle 190px at var(--x) var(--y),
+                    #000 0,
+                    #000 54%,
+                    rgba(0, 0, 0, 0.95) 64%,
+                    rgba(0, 0, 0, 0.55) 80%,
+                    transparent 100%
+            );
+        }
+
+        .background-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: -3;
+            pointer-events: none;
+            background:
+                    linear-gradient(
+                            to bottom,
+                            rgba(4, 28, 22, 0.28),
+                            rgba(4, 28, 22, 0.5)
+                    ),
+                    radial-gradient(
+                            circle at center,
+                            transparent 10%,
+                            rgba(2, 16, 12, 0.48) 100%
+                    );
+        }
+
+        .background-pattern {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            opacity: 0.12;
+            pointer-events: none;
+            background-image:
+                    linear-gradient(
+                            30deg,
+                            transparent 48%,
+                            var(--gold) 49%,
+                            var(--gold) 51%,
+                            transparent 52%
+                    ),
+                    linear-gradient(
+                            -30deg,
+                            transparent 48%,
+                            var(--gold) 49%,
+                            var(--gold) 51%,
+                            transparent 52%
+                    );
+            background-size: 42px 72px;
+        }
+
+        .spotlight-ring {
+            position: fixed;
+            z-index: -1;
+            left: var(--x);
+            top: var(--y);
+            width: 380px;
+            height: 380px;
+            border: 1px solid rgba(247, 231, 174, 0.22);
+            border-radius: 50%;
+            opacity: var(--reveal-opacity);
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(
+                    circle,
+                    rgba(247, 231, 174, 0.05),
+                    transparent 67%
+            );
+            box-shadow:
+                    inset 0 0 38px rgba(247, 231, 174, 0.09),
+                    0 0 32px rgba(210, 170, 85, 0.08);
+        }
+
+        /* Decorative page frame */
+
+        .page-frame {
+            position: fixed;
+            inset: 18px;
+            z-index: 1;
+            border: 1px solid rgba(247, 231, 174, 0.46);
+            pointer-events: none;
+        }
+
+        .page-frame::before,
+        .page-frame::after {
+            content: "◆";
+            position: absolute;
+            top: -9px;
+            padding: 0 12px;
+            color: var(--gold-light);
+            background: var(--emerald-950);
+            font-size: 13px;
+        }
+
+        .page-frame::before {
+            left: 34px;
+        }
+
+        .page-frame::after {
+            right: 34px;
+        }
+
+        /* Registration card */
+
+        .form {
+            position: relative;
+            z-index: 10;
+            width: min(100%, 490px);
+            padding: 52px 48px 44px;
+            overflow: hidden;
+            border: 1px solid rgba(247, 231, 174, 0.58);
+            border-radius: 4px;
+            background:
+                    linear-gradient(
+                            145deg,
+                            rgba(5, 37, 29, 0.92),
+                            rgba(34, 12, 20, 0.88)
+                    );
+            box-shadow:
+                    0 35px 90px rgba(0, 0, 0, 0.52),
+                    0 0 0 7px rgba(210, 170, 85, 0.07),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .form::before,
+        .form::after {
+            content: "";
+            position: absolute;
+            width: 62px;
+            height: 62px;
+            pointer-events: none;
+        }
+
+        .form::before {
+            top: 14px;
+            left: 14px;
+            border-top: 2px solid var(--gold);
+            border-left: 2px solid var(--gold);
+        }
+
+        .form::after {
+            right: 14px;
+            bottom: 14px;
+            border-right: 2px solid var(--gold);
+            border-bottom: 2px solid var(--gold);
+        }
+
+        .form-header {
+            text-align: center;
+        }
+
+        .form-kicker {
+            margin: 0 0 10px;
+            color: var(--gold);
+            font-family: "Cinzel", serif;
+            font-size: 0.67rem;
+            font-weight: 700;
+            letter-spacing: 0.26em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            margin: 0;
+            color: var(--ivory);
+            font-family: "Cormorant Garamond", Georgia, serif;
+            font-size: clamp(3.2rem, 8vw, 4.8rem);
+            font-weight: 600;
+            letter-spacing: -0.04em;
+            line-height: 0.9;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.28);
+        }
+
+        .subtitle {
+            max-width: 350px;
+            margin: 17px auto 0;
+            color: var(--muted);
+            font-family: "Cormorant Garamond", Georgia, serif;
+            font-size: 1.16rem;
+            line-height: 1.5;
+        }
+
+        .ornament {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 25px 0 28px;
+            color: var(--gold);
+        }
+
+        .ornament::before,
+        .ornament::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+        }
+
+        .ornament::before {
+            background: linear-gradient(to right, transparent, var(--gold));
+        }
+
+        .ornament::after {
+            background: linear-gradient(to left, transparent, var(--gold));
+        }
+
+        .ornament span {
+            width: 9px;
+            height: 9px;
+            border: 1px solid var(--gold);
+            transform: rotate(45deg);
+        }
+
+        .error-message {
+            margin-bottom: 19px;
+            padding: 12px 14px;
+            border: 1px solid rgba(255, 192, 200, 0.34);
+            border-left: 4px solid var(--error);
+            border-radius: 2px;
+            color: var(--error);
+            background: rgba(110, 18, 40, 0.3);
+            font-size: 0.86rem;
+            font-weight: 600;
+            line-height: 1.45;
+        }
+
+        form {
+            display: grid;
+            gap: 17px;
+        }
+
+        .field {
+            display: grid;
+            gap: 7px;
+        }
+
+        label {
+            color: var(--gold-light);
+            font-family: "Cormorant Garamond", Georgia, serif;
+            font-size: 1.04rem;
+            font-weight: 700;
+        }
+
+        input {
+            width: 100%;
+            min-height: 50px;
+            padding: 12px 14px;
+            border: 1px solid rgba(247, 231, 174, 0.34);
+            border-radius: 2px;
+            outline: none;
+            color: var(--ivory);
+            background: rgba(2, 21, 16, 0.47);
+            font: inherit;
+            transition:
+                    border-color 160ms ease,
+                    box-shadow 160ms ease,
+                    background-color 160ms ease;
+        }
+
+        input::placeholder {
+            color: rgba(255, 250, 240, 0.48);
+        }
+
+        input:hover {
+            border-color: rgba(247, 231, 174, 0.7);
+        }
+
+        input:focus {
+            border-color: var(--gold);
+            background: rgba(2, 21, 16, 0.72);
+            box-shadow: 0 0 0 3px rgba(210, 170, 85, 0.16);
+        }
+
+        .register-button {
+            position: relative;
+            width: 100%;
+            min-height: 54px;
+            margin-top: 7px;
+            overflow: hidden;
+            border: 1px solid var(--gold-dark);
+            border-radius: 2px;
+            color: var(--emerald-950);
+            background: linear-gradient(
+                    135deg,
+                    var(--gold-dark),
+                    var(--gold-light) 50%,
+                    var(--gold)
+            );
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.28);
+            cursor: pointer;
+            font-family: "Cinzel", serif;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            transition:
+                    transform 180ms ease,
+                    box-shadow 180ms ease,
+                    filter 180ms ease;
+        }
+
+        .register-button::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: -70%;
+            width: 42%;
+            transform: skewX(-22deg);
+            background: linear-gradient(
+                    to right,
+                    transparent,
+                    rgba(255, 255, 255, 0.5),
+                    transparent
+            );
+            transition: left 520ms ease;
+        }
+
+        .register-button:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.08);
+            box-shadow: 0 17px 30px rgba(0, 0, 0, 0.34);
+        }
+
+        .register-button:hover::before {
+            left: 130%;
+        }
+
+        .register-button:active {
+            transform: translateY(0);
+        }
+
+        .register-button:focus-visible {
+            outline: 3px solid rgba(247, 231, 174, 0.34);
+            outline-offset: 3px;
+        }
+
+        .privacy-note {
+            margin: 22px 0 0;
+            color: rgba(255, 250, 240, 0.62);
+            font-family: "Cormorant Garamond", Georgia, serif;
+            font-size: 0.96rem;
+            font-style: italic;
+            text-align: center;
+        }
+
+        .reveal-instruction {
+            position: fixed;
+            z-index: 5;
+            right: 40px;
+            bottom: 35px;
+            margin: 0;
+            padding: 9px 14px;
+            border: 1px solid rgba(247, 231, 174, 0.3);
+            color: var(--gold-light);
+            background: rgba(4, 28, 22, 0.48);
+            font-family: "Cormorant Garamond", Georgia, serif;
+            font-size: 0.98rem;
+            font-style: italic;
+            letter-spacing: 0.03em;
+            pointer-events: none;
+            backdrop-filter: blur(5px);
+            transition: opacity 180ms ease;
+        }
+
+        .royal-page.is-active .reveal-instruction {
+            opacity: 0.35;
+        }
+
+        @media (max-width: 600px) {
+            .royal-page {
+                padding: 35px 17px;
+            }
+
+            .page-frame {
+                inset: 9px;
+            }
+
+            .form {
+                padding: 46px 27px 38px;
+            }
+
+            .portrait-layer {
+                object-position: 58% center;
+            }
+
+            .portrait-layer.adorned {
+                -webkit-mask-image: radial-gradient(
+                        circle 130px at var(--x) var(--y),
+                        #000 0,
+                        #000 55%,
+                        rgba(0, 0, 0, 0.86) 75%,
+                        transparent 100%
+                );
+
+                mask-image: radial-gradient(
+                        circle 130px at var(--x) var(--y),
+                        #000 0,
+                        #000 55%,
+                        rgba(0, 0, 0, 0.86) 75%,
+                        transparent 100%
+                );
+            }
+
+            .spotlight-ring {
+                width: 260px;
+                height: 260px;
+            }
+
+            .reveal-instruction {
+                right: 20px;
+                bottom: 18px;
+                left: 20px;
+                text-align: center;
+            }
+        }
+
+        @media (pointer: coarse) {
+            .reveal-instruction {
+                display: none;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<main class="royal-page" id="royalPage">
+
+    <!--
+        BASE PORTRAIT:
+        Replace the src below with your girl-without-jewelry.jpg image.
+    -->
+    <img
+            class="portrait-layer base"
+            src="https://images.unsplash.com/photo-1617633150878-7df1d12a9a57?auto=format&fit=crop&w=1920&q=90"
+            alt="Traditional Indian royal portrait"
+            draggable="false"
+    >
+
+    <!--
+        ADORNED PORTRAIT:
+        Replace the src below with your girl-with-jewelry.jpg image.
+
+        Both images should use identical dimensions, framing, pose,
+        facial position, and background for a perfect jewelry reveal.
+    -->
+    <img
+            class="portrait-layer adorned"
+            src="https://images.unsplash.com/photo-1617633150878-7df1d12a9a57?auto=format&fit=crop&w=1920&q=90"
+            alt=""
+            aria-hidden="true"
+            draggable="false"
+    >
+
+    <div class="background-overlay" aria-hidden="true"></div>
+    <div class="background-pattern" aria-hidden="true"></div>
+    <div class="spotlight-ring" aria-hidden="true"></div>
+    <div class="page-frame" aria-hidden="true"></div>
+
+    <section class="form">
+        <header class="form-header">
+            <p class="form-kicker">An Invitation to Belong</p>
+            <h1>Create Account</h1>
+            <p class="subtitle">
+                Enter your details and become part of an experience inspired by
+                timeless royal heritage.
+            </p>
+        </header>
+
+        <div class="ornament" aria-hidden="true">
+            <span></span>
+        </div>
+
+        <!-- Existing backend error handling remains unchanged. -->
+        <div
+                class="error-message"
+                role="alert"
+                th:if="${error}"
+                th:text="${error}"
+        ></div>
+
+        <!-- Existing backend action and user model remain unchanged. -->
+        <form th:action="@{/register}" th:object="${user}" method="post">
+            <div class="field">
+                <label for="name">Full Name</label>
+                <input
+                        id="name"
+                        th:field="*{name}"
+                        type="text"
+                        placeholder="Enter your full name"
+                        autocomplete="name"
+                        required
+                >
+            </div>
+
+            <div class="field">
+                <label for="email">Email Address</label>
+                <input
+                        id="email"
+                        th:field="*{email}"
+                        type="email"
+                        placeholder="Enter your email address"
+                        autocomplete="email"
+                        required
+                >
+            </div>
+
+            <div class="field">
+                <label for="phone">Phone Number</label>
+                <input
+                        id="phone"
+                        th:field="*{phone}"
+                        type="tel"
+                        placeholder="Enter your phone number"
+                        autocomplete="tel"
+                >
+            </div>
+
+            <div class="field">
+                <label for="password">Password</label>
+                <input
+                        id="password"
+                        th:field="*{password}"
+                        type="password"
+                        placeholder="Create a secure password"
+                        autocomplete="new-password"
+                        required
+                >
+            </div>
+
+            <button class="register-button" type="submit">
+                Create Account
+            </button>
+        </form>
+
+        <p class="privacy-note">
+            Your information will be kept private and protected.
+        </p>
+    </section>
+
+    <p class="reveal-instruction">
+        Move your cursor across the page to reveal the royal adornment
+    </p>
+</main>
+
+<script>
+    (() => {
+        const page = document.getElementById("royalPage");
+
+        if (!page) {
+            return;
+        }
+
+        let currentX = window.innerWidth / 2;
+        let currentY = window.innerHeight / 2;
+        let targetX = currentX;
+        let targetY = currentY;
+        let animationFrame = null;
+
+        const renderSpotlight = () => {
+            currentX += (targetX - currentX) * 0.16;
+            currentY += (targetY - currentY) * 0.16;
+
+            page.style.setProperty("--x", `${currentX}px`);
+            page.style.setProperty("--y", `${currentY}px`);
+
+            const isMoving =
+                Math.abs(targetX - currentX) > 0.1 ||
+                Math.abs(targetY - currentY) > 0.1;
+
+            if (isMoving) {
+                animationFrame = requestAnimationFrame(renderSpotlight);
+            } else {
+                animationFrame = null;
+            }
+        };
+
+        const showSpotlight = (clientX, clientY) => {
+            targetX = clientX;
+            targetY = clientY;
+
+            page.style.setProperty("--reveal-opacity", "1");
+            page.classList.add("is-active");
+
+            if (!animationFrame) {
+                animationFrame = requestAnimationFrame(renderSpotlight);
+            }
+        };
+
+        const hideSpotlight = () => {
+            page.style.setProperty("--reveal-opacity", "0");
+            page.classList.remove("is-active");
+        };
+
+        page.addEventListener("mousemove", (event) => {
+            showSpotlight(event.clientX, event.clientY);
+        });
+
+        page.addEventListener("mouseleave", hideSpotlight);
+
+        page.addEventListener(
+            "touchstart",
+            (event) => {
+                const touch = event.touches[0];
+
+                if (touch) {
+                    showSpotlight(touch.clientX, touch.clientY);
+                }
+            },
+            { passive: true }
+        );
+
+        page.addEventListener(
+            "touchmove",
+            (event) => {
+                const touch = event.touches[0];
+
+                if (touch) {
+                    showSpotlight(touch.clientX, touch.clientY);
+                }
+            },
+            { passive: true }
+        );
+
+        page.addEventListener("touchend", hideSpotlight);
+        page.addEventListener("touchcancel", hideSpotlight);
+    })();
+</script>
+</body>
+</html>
